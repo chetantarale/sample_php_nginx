@@ -16,6 +16,8 @@ addons:
     - example.org
 
 before_script:
+  - currentLocation="$PWD"
+  - service mysql.server start
   - sudo apt-get update
   - sudo apt-get install nginx
   - sudo addgroup nobody
@@ -27,6 +29,13 @@ before_script:
   - sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
   - sudo rm /etc/nginx/sites-enabled/default
   - sudo service nginx restart
+  - mkdir -p shippable/testresults
+  - mkdir -p shippable/codecoverage
+  - wget https://phar.phpunit.de/phpunit.phar
+  - chmod +x phpunit.phar
+  - sudo mv phpunit.phar /usr/local/bin/phpunit
+  - phpunit --version
+  - cd "$currentLocation
 
 script:
   - phpunit  --log-junit shippable/testresults/junit.xml --coverage-xml shippable/codecoverage tests/ExampleTest.php
