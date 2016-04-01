@@ -32,7 +32,7 @@ before_script:
   - chmod +x phpunit.phar
   - sudo mv phpunit.phar /usr/local/bin/phpunit
   - phpunit --version
-  - cd "$currentLocation
+  - cd "$currentLocation"
 
 script:
   - phpunit  --log-junit shippable/testresults/junit.xml --coverage-xml shippable/codecoverage tests/ExampleTest.php
