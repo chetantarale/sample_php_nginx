@@ -1,11 +1,8 @@
-build_image: drydock/u14phpall:tip
+build_image: chetantarale/u14php7pls:testext1
 
 language: php
 
-php:
-  - 5.4
-  - 5.5
-  - 5.6
+php: 
   - '7.0'
 
 services:
@@ -13,20 +10,29 @@ services:
 
 addons:
   hosts:
-    - example.com
+    - example.org
 
 before_script:
+  - currentLocation="$PWD"
+  - service mysql.server start
   - sudo apt-get update
   - sudo apt-get install nginx
   - sudo addgroup nobody
   - sudo mkdir -p /var/www/example.com/html
   - sudo chown -R $USER:$USER /var/www/example.com/html
   - sudo chmod -R 755 /var/www
-  - sudo cp config/index.html /var/www/example.com/html/index.html
-  - sudo cp config/site-nginx.conf /etc/nginx/sites-available/example.com
+  - sudo cp -f config/index.html /var/www/example.com/html/
+  - sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/example.com
   - sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
   - sudo rm /etc/nginx/sites-enabled/default
   - sudo service nginx restart
+  - mkdir -p shippable/testresults
+  - mkdir -p shippable/codecoverage
+  - wget https://phar.phpunit.de/phpunit.phar
+  - chmod +x phpunit.phar
+  - sudo mv phpunit.phar /usr/local/bin/phpunit
+  - phpunit --version
+  - cd "$currentLocation"
 
 script:
   - phpunit  --log-junit shippable/testresults/junit.xml --coverage-xml shippable/codecoverage tests/ExampleTest.php
